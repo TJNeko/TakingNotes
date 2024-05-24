@@ -7,6 +7,16 @@ const PORT = process.env.PORT || 3000;
 app.use(express.static(path.join(__dirname, 'public')));
 app.use(express.json());
 
+const readNotesFromFile = () => {
+  const filePath = path.join(__dirname, 'db', 'db.json');
+  const data = fs.readFileSync(filePath, 'utf8');
+  return JSON.parse(data);
+};
+const writeNotesToFile = (notes) => {
+  const filePath = path.join(__dirname, 'db', 'db.json');
+  fs.writeFileSync(filePath, JSON.stringify(notes, null, 2), 'utf8');
+};
+
 app.get('/', (req, res) => {
     res.sendFile(path.join(__dirname, 'public', 'index.html'));
   });
@@ -15,20 +25,26 @@ app.get('/notes', (req, res) => {
   });
 
   app.get('/api/notes', (req, res) => {
-    fs.readFile(path.join(__dirname, 'db', 'db.json'), 'utf8', (err, data) => {
-      if (err) {
-        console.error(err);
-        res.status(500).json({ error: 'Internal Server Error' });
-        return;
-      }
-      res.json(JSON.parse(data));
-    });
+    try {
+      const notes = readNotesFromFile();
+      res.json(notes);
+    } catch (err) {
+      console.error(err);
+      res.status(500).json({ error: 'Internal Server Error' });
+    }
   });
 
   app.post('/api/notes', (req, res) => {
-    const newNote = req.body;
-    //
-    res.json(newNote);
+    try {
+      const newNote = req.body;
+      const notes = readNotesFromFile();
+      notes.push(newNote);
+      writeNotesToFile(notes);
+      res.json(newNote);
+    } catch (err) {
+      console.error(err);
+      res.status(500).json({ error: 'Internal Server Error' });
+    }
 });
 
 app.delete('/api/notes/:id', (req, res) => {

@@ -83,6 +83,7 @@ const handleNoteSave = () => {
   });
 };
 
+
 // Delete the clicked note
 const handleNoteDelete = (e) => {
   // Prevents the click listener for the list from being called when the button inside of it is clicked
@@ -130,6 +131,7 @@ const handleRenderBtns = () => {
 // Render the list of note titles
 const renderNoteList = async (notes) => {
   let jsonNotes = await notes.json();
+  console.log("Retrieved Notes:", jsonNotes);
   if (window.location.pathname === '/notes') {
     noteList.forEach((el) => (el.innerHTML = ''));
   }
@@ -181,6 +183,7 @@ const renderNoteList = async (notes) => {
   }
 };
 
+
 // Gets notes from the db and renders them to the sidebar
 const getAndRenderNotes = () => getNotes().then(renderNoteList);
 
@@ -189,6 +192,6 @@ if (window.location.pathname === '/notes') {
   newNoteBtn.addEventListener('click', handleNewNoteView);
   clearBtn.addEventListener('click', renderActiveNote);
   noteForm.addEventListener('input', handleRenderBtns);
-}
+};
 
 getAndRenderNotes();
