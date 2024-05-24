@@ -1,6 +1,7 @@
 const express = require('express');
 const path = require('path');
 const fs = require('fs');
+const { v4: uuidv4 } = require('uuid');
 const app = express();
 const PORT = process.env.PORT || 3000;
 
@@ -37,6 +38,7 @@ app.get('/notes', (req, res) => {
   app.post('/api/notes', (req, res) => {
     try {
       const newNote = req.body;
+      newNote.id = uuidv4();
       const notes = readNotesFromFile();
       notes.push(newNote);
       writeNotesToFile(notes);
@@ -48,9 +50,16 @@ app.get('/notes', (req, res) => {
 });
 
 app.delete('/api/notes/:id', (req, res) => {
+  try {
     const noteId = req.params.id;
-    //
+    let notes = readNotesFromFile();
+    notes = notes.filter((note) => note.id !== noteId);
+    writeNotesToFile(notes);
     res.json({ message: 'Note deleted successfully' });
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ error: 'Internal Server Error' });
+  }
 });
 
 app.listen(PORT, () => {
