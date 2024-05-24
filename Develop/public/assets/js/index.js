@@ -111,9 +111,15 @@ const handleNoteView = (e) => {
 
 // Sets the activeNote to and empty object and allows the user to enter a new note
 const handleNewNoteView = (e) => {
+  e.preventDefault();
   activeNote = {};
+  noteTitle.removeAttribute('readonly');
+  noteText.removeAttribute('readonly');
+  noteTitle.value = '';
+  noteText.value = '';
   show(clearBtn);
   renderActiveNote();
+  show(newNoteBtn);
 };
 
 // Renders the appropriate buttons based on the state of the form
@@ -195,3 +201,4 @@ if (window.location.pathname === '/notes') {
 };
 
 getAndRenderNotes();
+
